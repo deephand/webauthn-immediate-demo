@@ -1,0 +1,31 @@
+/* Basic styling for message boxes */
+/* Reused from the previous demo */
+.message {
+    padding: 0.75rem 1rem; /* py-3 px-4 */
+    border-radius: 0.375rem; /* rounded-md */
+    margin-top: 1rem; /* Added margin-top */
+    font-weight: 500; /* font-medium */
+    border-width: 1px;
+    border-style: solid;
+    text-align: left; /* Align text left for better readability */
+}
+
+.message-error {
+    background-color: #FED7D7; /* Tailwind red-100 */
+    border-color: #FC8181; /* Tailwind red-400 */
+    color: #C53030; /* Tailwind red-800 */
+}
+
+.message-info {
+    background-color: #EBF8FF; /* Tailwind blue-100 */
+    border-color: #90CDF4; /* Tailwind blue-300 */
+    color: #2C5282; /* Tailwind blue-800 */
+}
+
+/* Style for hidden elements */
+.hidden {
+    display: none;
+}
+
+/* Add any other specific styles for signin.html here if needed */
+/* Most styling is handled by Tailwind classes in the HTML */

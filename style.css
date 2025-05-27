@@ -1,0 +1,94 @@
+/* Custom styles for toggle switch */
+/* Note: Tailwind directives like @apply won't work in standard CSS. */
+/* We need to use the actual CSS properties Tailwind generates or write standard CSS. */
+/* Below uses standard CSS that mimics the Tailwind appearance. */
+
+.toggle-checkbox {
+    /* Basic positioning and appearance */
+    position: absolute;
+    display: block;
+    width: 1.5rem; /* w-6 */
+    height: 1.5rem; /* h-6 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #fff; /* bg-white */
+    border-width: 4px;
+    appearance: none;
+    cursor: pointer;
+    left: 0; /* Default position */
+    transition: right 0.2s ease-in; /* Match Tailwind transition */
+     border-color: #E2E8F0; /* Default border color (gray-300) */
+}
+
+.toggle-label {
+    /* Background track for the toggle */
+    display: block;
+    overflow: hidden;
+    height: 1.5rem; /* h-6 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #D1D5DB; /* bg-gray-300 */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in; /* Match Tailwind transition */
+}
+
+.toggle-checkbox:checked {
+    /* Checked state: move handle to the right */
+    right: 0;
+    left: auto; /* Override default left */
+    border-color: #68D391; /* border-green-400 */
+}
+
+.toggle-checkbox:checked + .toggle-label {
+    /* Checked state: change background color */
+    background-color: #68D391; /* bg-green-400 */
+}
+
+/* Basic styling for message boxes */
+.message {
+    padding: 0.75rem 1rem; /* py-3 px-4 */
+    border-radius: 0.375rem; /* rounded-md */
+    margin-bottom: 1rem; /* mb-4 */
+    font-weight: 500; /* font-medium */
+    border-width: 1px;
+    border-style: solid;
+}
+
+.message-success {
+    background-color: #C6F6D5; /* Tailwind green-100 */
+    border-color: #68D391; /* Tailwind green-400 */
+    color: #2F855A; /* Tailwind green-800 */
+}
+
+.message-error {
+    background-color: #FED7D7; /* Tailwind red-100 */
+    border-color: #FC8181; /* Tailwind red-400 */
+    color: #C53030; /* Tailwind red-800 */
+}
+
+.message-info {
+    background-color: #EBF8FF; /* Tailwind blue-100 */
+    border-color: #90CDF4; /* Tailwind blue-300 */
+    color: #2C5282; /* Tailwind blue-800 */
+}
+
+/* Style for disabled button */
+.btn-disabled-error {
+    /* Use !important carefully, but necessary here to override Tailwind hover states */
+     background-color: #FC8181 !important; /* Tailwind red-400 */
+     cursor: not-allowed !important;
+     opacity: 0.8 !important;
+}
+
+/* Ensure body takes full height for centering */
+/* html, body {
+    height: 100%;
+} */
+
+/* Body styling is mostly handled by Tailwind classes in the HTML */
+/* body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem; /* p-4 */
+/* } */
+

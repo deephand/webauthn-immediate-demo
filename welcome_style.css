@@ -1,0 +1,33 @@
+/* Basic styling for message boxes (reused) */
+.message {
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+    font-weight: 500;
+    border-width: 1px;
+    border-style: solid;
+    text-align: left;
+}
+
+.message-error {
+    background-color: #FED7D7; /* red-100 */
+    border-color: #FC8181; /* red-400 */
+    color: #C53030; /* red-800 */
+}
+
+.message-success {
+    background-color: #C6F6D5; /* green-100 */
+    border-color: #68D391; /* green-400 */
+    color: #2F855A; /* green-800 */
+}
+
+/* Style for hidden elements */
+.hidden {
+    display: none;
+}
+
+/* Ensure image doesn't exceed container height/width if needed */
+#catImage {
+    max-height: 100%;
+    max-width: 100%;
+}

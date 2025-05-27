@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="welcome_style.css">
+</head>
+<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+        <h1 id="greeting" class="text-3xl font-bold text-gray-800 mb-4">Welcome!</h1>
+
+        <p id="signInMethod" class="text-gray-600 mb-6">Loading sign-in information...</p>
+
+        <div class="mb-6 h-64 flex items-center justify-center bg-gray-200 rounded-lg overflow-hidden">
+            <img id="catImage" src="https://placehold.co/400x300/cccccc/666666?text=Loading+Cat..." alt="Random Cat" class="object-contain h-full w-auto" onerror="this.onerror=null; this.src='https://placehold.co/400x300/f87171/991b1b?text=Failed+to+load+cat!';">
+        </div>
+
+        <div id="passkeyOffer" class="hidden bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-md mt-6 text-sm">
+            <p class="mb-3">Add a passkey for faster, more secure sign-ins next time!</p>
+            <button id="createPasskeyButton" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Create Passkey
+            </button>
+            <div id="passkeyMessageArea" class="mt-3 text-xs min-h-[16px]"></div>
+        </div>
+
+         <div class="mt-8">
+             <a href="index.html" class="text-sm text-blue-600 hover:underline">&larr; Back to Main Demo</a>
+         </div>
+
+    </div>
+
+    <script src="welcome_script.js" defer></script>
+
+</body>
+</html>

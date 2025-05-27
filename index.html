@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAuthn Immediate Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Add simple tooltip styling */
+        [title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem; /* text-xs */
+            white-space: nowrap;
+            z-index: 10;
+            /* Position tooltip - adjust as needed */
+            bottom: 125%; /* Position above the element */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.2s;
+        }
+         [title]:hover::after {
+             opacity: 1; /* Show on hover */
+         }
+         /* Style disabled toggle section */
+         .toggle-disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+         }
+         .toggle-disabled label,
+         .toggle-disabled input {
+              cursor: not-allowed !important;
+         }
+         /* Styles for expandable section */
+        .explanation-title {
+            cursor: pointer;
+            user-select: none;
+        }
+        .explanation-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .explanation-content.expanded {
+            max-height: 500px; /* Adjust as needed for content height */
+        }
+        .explanation-title .arrow {
+            display: inline-block;
+            transition: transform 0.3s ease-out;
+            margin-right: 0.25rem; /* space between arrow and text */
+        }
+        .explanation-title .arrow.expanded {
+            transform: rotate(90deg);
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mb-8">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">WebAuthn Immediate Demo</h1>
+
+        <div class="text-center mb-4">
+            <a href="https://github.com/w3c/webauthn/wiki/Explainer:-WebAuthn-immediate-mediation" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 hover:underline">
+                Explainer: WebAuthn immediate mediation
+            </a>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-md mb-6 text-sm">
+            <h2 class="font-semibold mb-2">Instructions:</h2>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Try this in the latest <strong class="font-semibold">Chrome Canary</strong>.</li>
+                <li>Enable the flag: <code class="bg-blue-100 px-1 rounded">chrome://flags/#web-authentication-immediate-get</code></li>
+            </ul>
+        </div>
+
+        <div id="capability-status" class="mb-6 text-center text-gray-600">
+             <div class="flex items-center justify-center p-3 border border-gray-200 rounded-md bg-gray-50">
+                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                 </svg>
+                 <span class="text-sm font-medium">Checking capabilities...</span>
+             </div>
+         </div>
+
+
+        <div class="space-y-4 mb-6">
+            <div class="flex items-center justify-between">
+                <span class="text-gray-700">Use <code class="bg-gray-200 px-1 rounded text-sm">mediation: 'immediate'</code></span>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="immediateToggle" id="immediateToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                    <label for="immediateToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+
+            <div id="passwordsToggleSection" class="flex items-center justify-between">
+                <span class="text-gray-700 flex items-center">
+                    Request Passwords
+                    <span id="passwordSupportIcon" class="ml-2 relative"></span>
+                </span>
+                 <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="passwordsToggle" id="passwordsToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                    <label for="passwordsToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+        </div>
+
+        <button id="signInButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Sign In
+        </button>
+
+        <div id="messageArea" class="mt-6 text-center text-sm text-gray-600 min-h-[20px]">
+            </div>
+
+        <div id="urlParamsContainer" class="mt-6 p-4 border border-gray-200 rounded-md bg-gray-50 text-xs text-gray-700">
+            <h3 id="explanationTitle" class="explanation-title font-semibold text-sm mb-2 text-gray-800 flex items-center">
+                <span class="arrow">&#9654;</span> URL Parameter Options
+            </h3>
+            <div id="urlParamsExplanationContent" class="explanation-content">
+                <p class="mb-1 mt-2">You can control some behaviors by adding parameters to this page's URL:</p>
+                <ul class="list-disc list-inside space-y-1 pl-2">
+                    <li>
+                        <code class="bg-gray-200 px-1 rounded">uv=[value]</code>: Sets User Verification requirement.
+                        <br/>Accepted values: <code class="bg-gray-200 px-1 rounded">required</code>, <code class="bg-gray-200 px-1 rounded">preferred</code> (default), <code class="bg-gray-200 px-1 rounded">discouraged</code>.
+                        <br/>Example: <code class="bg-gray-200 px-1 rounded">index.html?uv=required</code>
+                    </li>
+                    <li>
+                        <code class="bg-gray-200 px-1 rounded">immediate_onload=true</code>: Attempts a sign-in with <code class="bg-gray-200 px-1 rounded">mediation: 'immediate'</code> automatically when the page loads.
+                        <br/>Example: <code class="bg-gray-200 px-1 rounded">index.html?immediate_onload=true</code>
+                    </li>
+                    <li>
+                        <code class="bg-gray-200 px-1 rounded">fallback=pw</code>: If a sign-in attempt on this page results in a <code class="bg-gray-200 px-1 rounded">NotAllowedError</code> (e.g., user cancellation, or immediate mediation fails), you will be redirected to the sign-in page with the password flow pre-selected (<code class="bg-gray-200 px-1 rounded">signin.html?type=pw</code>).
+                        <br/>Example: <code class="bg-gray-200 px-1 rounded">index.html?fallback=pw</code>
+                    </li>
+                     <li>
+                        <code class="bg-gray-200 px-1 rounded">autoselect</code>: If this parameter is present (value doesn't matter), the <code class="bg-gray-200 px-1 rounded">timeout</code> for the <code class="bg-gray-200 px-1 rounded">navigator.credentials.get()</code> call will be set to <code class="bg-gray-200 px-1 rounded">300042</code> (otherwise it's <code class="bg-gray-200 px-1 rounded">300000</code>).
+                        <br/>Example: <code class="bg-gray-200 px-1 rounded">index.html?autoselect</code>
+                    </li>
+                </ul>
+                <p class="mt-2">Parameters can be combined, e.g., <code class="bg-gray-200 px-1 rounded">index.html?uv=required&immediate_onload=true</code>.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="text-center text-xs text-gray-500 py-4">
+        Instructed by derinel@google.com, implemented by Gemini ❤️
+    </footer>
+
+    <script src="script.js" defer></script>
+
+</body>
+</html>
