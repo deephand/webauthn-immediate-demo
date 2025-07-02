@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ** Origin Trial Token ** -->
+    <meta http-equiv="origin-trial" content="AgW6118UKKUnG1lyqZnTHmRNobr+fgDUGycQyH7kSau2pZBcBTvJcLLtJHNhCcqbRKjIjvbtaVjqCCegN8BoJggAAABpeyJvcmlnaW4iOiJodHRwczovL2RlZXBoYW5kLmdpdGh1Yi5pbzo0NDMiLCJmZWF0dXJlIjoiV2ViQXV0aGVudGljYXRpb25JbW1lZGlhdGVHZXQiLCJleHBpcnkiOjE3NjU4NDMyMDB9">
     <title>WebAuthn Immediate Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
@@ -66,7 +68,6 @@
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mb-8">
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">WebAuthn Immediate Demo</h1>
 
-        <!-- ** NEW: Origin Trial Notice ** -->
         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-md" role="alert">
             <p class="font-bold">Now in Origin Trial!</p>
             <p class="text-sm">This feature is now available for testing in a Chrome Origin Trial.
@@ -82,11 +83,13 @@
             </a>
         </div>
 
+        <!-- ** Updated Instructions ** -->
         <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-md mb-6 text-sm">
-            <h2 class="font-semibold mb-2">Instructions:</h2>
+            <h2 class="font-semibold mb-2">How to Test:</h2>
             <ul class="list-disc list-inside space-y-1">
-                <li>Try this in the latest <strong class="font-semibold">Chrome Canary</strong>.</li>
-                <li>Enable the flag: <code class="bg-blue-100 px-1 rounded">chrome://flags/#web-authentication-immediate-get</code></li>
+                <li>Try this in a recent version of <strong class="font-semibold">Google Chrome</strong>.</li>
+                <li>This site is registered for the Origin Trial, so the feature should be enabled.</li>
+                <li>Alternatively, you can enable the flag manually: <code class="bg-blue-100 px-1 rounded">chrome://flags/#web-authentication-immediate-get</code></li>
             </ul>
         </div>
 
