@@ -1,5 +1,7 @@
 // --- DOM Elements ---
 const immediateToggle = document.getElementById('immediateToggle');
+const passkeysToggle = document.getElementById('passkeysToggle');
+const passkeySupportIcon = document.getElementById('passkeySupportIcon');
 const passwordsToggle = document.getElementById('passwordsToggle');
 const passwordsToggleSection = document.getElementById('passwordsToggleSection');
 const passwordSupportIcon = document.getElementById('passwordSupportIcon');
@@ -147,22 +149,21 @@ async function attemptSignIn(useImmediateMediation = false) {
     }
 
     try {
-        const challengeBuffer = generateRandomBuffer();
-        if (!challengeBuffer) return;
+        let getOptions = {};
 
-        // Construct publicKey options using the effectiveUserVerification
-        const publicKeyCredentialRequestOptions = {
-            challenge: challengeBuffer,
-            timeout: useAutoselectTimeout ? 300042 : 300000,
-            userVerification: effectiveUserVerification,
-            rpId: window.location.hostname,
-            allowCredentials: []
-        };
-        console.log("[script.js] Using timeout:", publicKeyCredentialRequestOptions.timeout);
+        if (passkeysToggle.checked) {
+            const challengeBuffer = generateRandomBuffer();
+            if (!challengeBuffer) return;
 
-
-        // Construct final getOptions
-        let getOptions = { publicKey: publicKeyCredentialRequestOptions };
+            const publicKeyCredentialRequestOptions = {
+                challenge: challengeBuffer,
+                timeout: useAutoselectTimeout ? 300042 : 300000,
+                userVerification: effectiveUserVerification,
+                rpId: window.location.hostname,
+                allowCredentials: []
+            };
+            getOptions.publicKey = publicKeyCredentialRequestOptions;
+        }
 
         // Determine mediation: force 'immediate' if specified, otherwise use toggle state
         if (useImmediateMediation) {
@@ -179,6 +180,16 @@ async function attemptSignIn(useImmediateMediation = false) {
         if (passwordsToggle.checked && !passwordsToggle.disabled) {
              getOptions.password = true;
              console.log("[script.js] Requesting password credential.");
+        }
+
+        if (Object.keys(getOptions).length === 0) {
+            setButtonErrorState("No credential type requested. Please enable passkeys or passwords.");
+            return;
+        }
+
+        if (Object.keys(getOptions).length === 1 && getOptions.mediation) {
+            setButtonErrorState("Requesting with only a mediation hint is not allowed.");
+            return;
         }
 
 
@@ -277,7 +288,7 @@ function initializeDemo() {
 
 
     // Check for essential elements
-     if (!immediateToggle || !passwordsToggle || !passwordsToggleSection || !passwordSupportIcon || !signInButton || !messageArea || !capabilityStatusDiv || !explanationTitle || !urlParamsExplanationContent) { // Added new elements
+     if (!immediateToggle || !passkeysToggle || !passkeySupportIcon || !passwordsToggle || !passwordsToggleSection || !passwordSupportIcon || !signInButton || !messageArea || !capabilityStatusDiv || !explanationTitle || !urlParamsExplanationContent) { // Added new elements
         console.error("[script.js] One or more required DOM elements are missing. Cannot initialize demo.");
         if(capabilityStatusDiv) capabilityStatusDiv.innerHTML = `<div class="message message-error">Initialization Error: Page elements missing.</div>`;
         if(signInButton) signInButton.disabled = true;
@@ -308,11 +319,18 @@ function initializeDemo() {
 
 
     // 1. Check PublicKeyCredential capabilities
-    if (typeof PublicKeyCredential === "undefined" || typeof PublicKeyCredential.getClientCapabilities !== "function") {
-        showCapabilityStatus("WebAuthn or getClientCapabilities() not supported by this browser.", 'error');
+    if (typeof PublicKeyCredential === "undefined") {
+        showCapabilityStatus("WebAuthn not supported by this browser.", 'error');
         signInButton.disabled = true;
         signInButton.classList.add('opacity-50', 'cursor-not-allowed');
-        return;
+        passkeysToggle.disabled = true;
+    } else {
+        passkeySupportIcon.innerHTML = ICON_INFO;
+        passkeySupportIcon.title = "Passkeys are supported.";
+    }
+
+    if (typeof PublicKeyCredential.getClientCapabilities !== "function") {
+        showCapabilityStatus("getClientCapabilities() not supported by this browser.", 'info');
     }
 
     (async () => {
@@ -386,6 +404,7 @@ function initializeDemo() {
 
     // 4. Attach Toggle listeners
     immediateToggle.addEventListener('change', resetButtonState);
+    passkeysToggle.addEventListener('change', resetButtonState);
     passwordsToggle.addEventListener('change', () => {
         if (!passwordsToggle.disabled) {
             resetButtonState();
