@@ -252,9 +252,53 @@ passwordInput.addEventListener('keydown', (event) => { // Added for password fie
 });
 
 // --- Initial Setup ---
+
+async function initiateFedCM() {
+  if (!window.IdentityCredential) {
+    console.log("FedCM is not supported on this browser.");
+    return;
+  }
+
+  try {
+    const cred = await navigator.credentials.get({
+      identity: {
+        providers: [
+          {
+            configURL: "https://fedcm-demo-idp.dev/fedcm.json",
+            clientId: window.location.origin,
+            nonce: Math.random().toString(36).substring(2),
+          },
+        ],
+        mode: "passive",
+      },
+    });
+
+    if (cred) {
+      console.log("FedCM credential received:", cred);
+      // We don't have a real backend, so we'll just redirect to the welcome page
+      // and store the user's name in sessionStorage.
+      storeInfoAndRedirect("welcome.html", "FedCM User", "Federated");
+    } else {
+      console.log("FedCM credential is null.");
+    }
+  } catch (e) {
+    console.error("FedCM error:", e);
+    showMessage(
+      "FedCM failed. Check browser support and ensure third-party cookies are enabled.",
+      true
+    );
+  }
+}
+
 function initializeSignInPage() {
-    console.log("[signin_script.js] Initializing sign-in page.");
     const urlParams = new URLSearchParams(window.location.search);
+    const fedcmParam = urlParams.get('fedcm');
+
+    if (fedcmParam) {
+        initiateFedCM();
+    }
+
+    console.log("[signin_script.js] Initializing sign-in page.");
     const typeParam = urlParams.get('type');
 
     // Always hide both sections initially

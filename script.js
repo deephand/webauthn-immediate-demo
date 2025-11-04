@@ -5,6 +5,9 @@ const passkeySupportIcon = document.getElementById('passkeySupportIcon');
 const passwordsToggle = document.getElementById('passwordsToggle');
 const passwordsToggleSection = document.getElementById('passwordsToggleSection');
 const passwordSupportIcon = document.getElementById('passwordSupportIcon');
+const fedcmToggleSection = document.getElementById('fedcmToggleSection');
+const fedcmToggle = document.getElementById('fedcmToggle');
+const fedcmSupportIcon = document.getElementById('fedcmSupportIcon');
 const signInButton = document.getElementById('signInButton');
 const messageArea = document.getElementById('messageArea');
 const capabilityStatusDiv = document.getElementById('capability-status');
@@ -16,6 +19,7 @@ const urlParamsExplanationContent = document.getElementById('urlParamsExplanatio
 let effectiveUserVerification = 'preferred'; // Default (still used internally)
 let triggerImmediateOnLoad = false;
 let initialUrlFallbackParam = null;
+let initialUrlFedCMParam = null;
 let useAutoselectTimeout = false;
 
 // --- SVG Icons ---
@@ -182,6 +186,18 @@ async function attemptSignIn(useImmediateMediation = false) {
              console.log("[script.js] Requesting password credential.");
         }
 
+        // Add FedCM option if toggle is checked AND enabled
+        if (fedcmToggle && fedcmToggle.checked && !fedcmToggle.disabled) {
+            getOptions.identity = {
+                providers: [{
+                    configURL: "https://fedcm-demo-idp.dev/fedcm.json",
+                    clientId: window.location.origin,
+                    nonce: Math.random().toString(36).substring(2),
+                }]
+            };
+            console.log("[script.js] Requesting federated credential.");
+        }
+
         if (Object.keys(getOptions).length === 0) {
             setButtonErrorState("No credential type requested. Please enable passkeys or passwords.");
             return;
@@ -251,6 +267,10 @@ async function attemptSignIn(useImmediateMediation = false) {
                  signinRedirectUrl += '?type=pw';
                  console.log(`[script.js] Appending ?type=pw to signin.html redirect because initialUrlFallbackParam was 'pw'.`);
              }
+             if (initialUrlFedCMParam) {
+                signinRedirectUrl += signinRedirectUrl.includes('?') ? '&fedcm=true' : '?fedcm=true';
+                console.log(`[script.js] Appending fedcm=true to signin.html redirect because fedcm was true.`);
+             }
              console.log(`[script.js] Redirecting to ${signinRedirectUrl}...`);
              window.location.href = signinRedirectUrl;
         }
@@ -264,6 +284,12 @@ async function attemptSignIn(useImmediateMediation = false) {
     }
 }
 
+function getBoolean(value) {
+    if (value === null) {
+        return false;
+    }
+    return value === 'true';
+}
 
 // --- Initialization ---
 
@@ -274,18 +300,18 @@ function initializeDemo() {
     const urlParams = new URLSearchParams(window.location.search);
     initialUrlFallbackParam = urlParams.get('fallback');
     const uvParam = urlParams.get('uv');
-    const immediateOnLoadParam = urlParams.get('immediate_onload');
-    const autoselectParam = urlParams.get('autoselect');
+    const immediateOnLoadParam = getBoolean(urlParams.get('immediate_onload'));
+    const autoselectParam = getBoolean(urlParams.get('autoselect'));
+    initialUrlFedCMParam = getBoolean(urlParams.get('fedcm'));
 
     if (initialUrlFallbackParam === 'pw') {
         console.log("[script.js] URL parameter 'fallback=pw' was present on initial load. This will be used if redirection to signin.html occurs due to NotAllowedError.");
     }
 
-    if (autoselectParam !== null) {
+    if (autoselectParam) {
         useAutoselectTimeout = true;
         console.log("[script.js] URL parameter 'autoselect' found. Using special timeout 300042.");
     }
-
 
     // Check for essential elements
      if (!immediateToggle || !passkeysToggle || !passkeySupportIcon || !passwordsToggle || !passwordsToggleSection || !passwordSupportIcon || !signInButton || !messageArea || !capabilityStatusDiv || !explanationTitle || !urlParamsExplanationContent) { // Added new elements
@@ -378,6 +404,24 @@ function initializeDemo() {
         passwordsToggle.disabled = true;
         passwordsToggleSection.classList.add('toggle-disabled');
     }
+
+    // 3. Check FedCM support
+    if (!!initialUrlFedCMParam) {
+        console.log("[script.js] URL parameter 'fedcm' found. FedCM is enabled.");
+        fedcmToggleSection.classList.remove('hidden');
+        if (typeof IdentityCredential !== 'undefined') {
+            console.log("[script.js] IdentityCredential supported.");
+            fedcmSupportIcon.innerHTML = ICON_INFO;
+            fedcmSupportIcon.title = "You can sign in to fedcm-demo-idp.dev to test federation.";
+            fedcmToggle.disabled = false;
+        } else {
+            console.warn("[script.js] IdentityCredential not supported.");
+            fedcmSupportIcon.innerHTML = ICON_WARN;
+            fedcmSupportIcon.title = "IdentityCredential not supported by this browser.";
+            fedcmToggle.disabled = true;
+        }
+    }
+
      if (typeof TextDecoder === "undefined") {
          console.warn("[script.js] TextDecoder API not supported, cannot read passkey username if encoded in userHandle.");
      }
