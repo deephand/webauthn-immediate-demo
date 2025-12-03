@@ -260,18 +260,23 @@ async function initiateFedCM() {
   }
 
   try {
+    console.log("[signin_script.js] Starting FedCM passive mode request...");
     const cred = await navigator.credentials.get({
       identity: {
         providers: [
           {
-            configURL: "https://fedcm-demo-idp.dev/fedcm.json",
+            configURL: "https://bbddcaf6-380b-4e5a-b8e1-08eae44d61f9-00-2v5ggpej3d5zx.picard.replit.dev/fedcm.json",
             clientId: window.location.origin,
             nonce: Math.random().toString(36).substring(2),
           },
         ],
         mode: "passive",
+
       },
+      mediation: "required",
     });
+
+    console.log("[signin_script.js] FedCM request completed.");
 
     if (cred) {
       console.log("FedCM credential received:", cred);
@@ -282,11 +287,15 @@ async function initiateFedCM() {
       console.log("FedCM credential is null.");
     }
   } catch (e) {
-    console.error("FedCM error:", e);
-    showMessage(
-      "FedCM failed. Check browser support and ensure third-party cookies are enabled.",
-      true
-    );
+    console.error(`FedCM error [${e.name}]: ${e.message}`, e);
+    if (e.name === 'NetworkError') {
+        showMessage("Passive sign-in failed (NetworkError). User might not be signed in to IdP.", true);
+    } else {
+        showMessage(
+        "FedCM failed. Check browser support and ensure third-party cookies are enabled.",
+        true
+        );
+    }
   }
 }
 

@@ -190,7 +190,7 @@ async function attemptSignIn(useImmediateMediation = false) {
         if (fedcmToggle && fedcmToggle.checked && !fedcmToggle.disabled) {
             getOptions.identity = {
                 providers: [{
-                    configURL: "https://fedcm-demo-idp.dev/fedcm.json",
+                    configURL: "https://bbddcaf6-380b-4e5a-b8e1-08eae44d61f9-00-2v5ggpej3d5zx.picard.replit.dev/fedcm.json",
                     clientId: window.location.origin,
                     nonce: Math.random().toString(36).substring(2),
                 }]
@@ -412,7 +412,7 @@ function initializeDemo() {
         if (typeof IdentityCredential !== 'undefined') {
             console.log("[script.js] IdentityCredential supported.");
             fedcmSupportIcon.innerHTML = ICON_INFO;
-            fedcmSupportIcon.title = "You can sign in to fedcm-demo-idp.dev to test federation.";
+            fedcmSupportIcon.title = "You can sign in to bbddcaf6-380b-4e5a-b8e1-08eae44d61f9-00-2v5ggpej3d5zx.picard.replit.dev to test federation.";
             fedcmToggle.disabled = false;
         } else {
             console.warn("[script.js] IdentityCredential not supported.");
