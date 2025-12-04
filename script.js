@@ -414,6 +414,7 @@ function initializeDemo() {
             fedcmSupportIcon.innerHTML = ICON_INFO;
             fedcmSupportIcon.title = "You can sign in to bbddcaf6-380b-4e5a-b8e1-08eae44d61f9-00-2v5ggpej3d5zx.picard.replit.dev to test federation.";
             fedcmToggle.disabled = false;
+            fedcmToggle.checked = true;
         } else {
             console.warn("[script.js] IdentityCredential not supported.");
             fedcmSupportIcon.innerHTML = ICON_WARN;
