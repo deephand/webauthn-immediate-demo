@@ -265,7 +265,7 @@ async function initiateFedCM() {
       identity: {
         providers: [
           {
-            configURL: "https://bbddcaf6-380b-4e5a-b8e1-08eae44d61f9-00-2v5ggpej3d5zx.picard.replit.dev/fedcm.json",
+            configURL: "https://fedcm-idp-demo.onrender.com/fedcm.json",
             clientId: window.location.origin,
             nonce: Math.random().toString(36).substring(2),
           },
